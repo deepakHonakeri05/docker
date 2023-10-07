@@ -1,0 +1,28 @@
+FROM --platform=linux/amd64 python:3.9
+
+USER root
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+RUN apt-get update 
+
+# install google chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+RUN apt-get -y update
+RUN apt-get install xvfb -y
+RUN apt-get install -y google-chrome-stable
+
+RUN pip3 install requests
+RUN pip3 install bs4
+RUN pip3 install fastapi uvicorn[standard]
+RUN pip3 install selenium
+RUN pip3 install PyVirtualDisplay
+
+WORKDIR /app
+
+COPY ./main.py main.py
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+Expose 8000

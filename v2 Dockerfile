@@ -1,0 +1,24 @@
+FROM --platform=linux/amd64 selenium/standalone-chrome
+
+USER root
+WORKDIR /app
+
+RUN apt-get update
+RUN apt-get -y install vim
+
+RUN apt-get install -y python3
+RUN apt-get install -y python3-pip
+RUN pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+RUN pip3 install requests
+RUN pip3 install bs4
+RUN pip3 install fastapi uvicorn[standard]
+
+# install selenium
+RUN pip3 install selenium
+
+COPY ./main.py main.py
+COPY ./vgg16_5epoch.pth ./vgg16_5epoch.pth
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+Expose 8000
